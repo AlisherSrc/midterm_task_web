@@ -1,0 +1,473 @@
+{
+	"info": {
+		"_postman_id": "a98e1f5b-6c42-4f90-bc31-897368297b41",
+		"name": "Space Bounty Hunters API",
+		"description": "Comprehensive Postman Collection demonstrating all required endpoints for the Space Bounty Hunters Midterm Practical Assignment:\n- Criminal listing, filtering (min_reward, max_reward, armed, has_crew, escape_master), and sorting (reward, -reward)\n- Criminal details with encounter logs\n- Full CRUD for Bounty Hunting Journal (HuntLog): Create, Read all, Read by ID, Read by criminal filter, Update (PATCH), Delete\n- Invalid requests demonstration (404 Not Found & 400 Bad Request)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Wanted Criminals",
+			"item": [
+				{
+					"name": "List All Criminals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								""
+							]
+						},
+						"description": "Retrieve list of all wanted space criminals."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter & Sort: min_reward=5000 & armed=true & sort=-reward",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/?min_reward=5000&armed=true&sort=-reward",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								""
+							],
+							"query": [
+								{
+									"key": "min_reward",
+									"value": "5000"
+								},
+								{
+									"key": "armed",
+									"value": "true"
+								},
+								{
+									"key": "sort",
+									"value": "-reward"
+								}
+							]
+						},
+						"description": "Demonstrates combined filters (min_reward, armed) and descending bounty sort (-reward) as required by the assignment prompt example."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter: max_reward=100000 & has_crew=true",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/?max_reward=100000&has_crew=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								""
+							],
+							"query": [
+								{
+									"key": "max_reward",
+									"value": "100000"
+								},
+								{
+									"key": "has_crew",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Filter criminals having a bounty <= 100,000 who operate with a crew."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter & Sort: escape_master=true & sort=reward (Ascending)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/?escape_master=true&sort=reward",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								""
+							],
+							"query": [
+								{
+									"key": "escape_master",
+									"value": "true"
+								},
+								{
+									"key": "sort",
+									"value": "reward"
+								}
+							]
+						},
+						"description": "Filter criminals known as escape masters, sorted by bounty ascending."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Criminal Details by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/1/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								"1",
+								""
+							]
+						},
+						"description": "Returns full details for criminal ID 1, including their encounter history (hunt logs)."
+					},
+					"response": []
+				},
+				{
+					"name": "[Invalid Request] Criminal Not Found (404)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/99999/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								"99999",
+								""
+							]
+						},
+						"description": "Demonstrates error handling for invalid/non-existent criminal ID (returns HTTP 404)."
+					},
+					"response": []
+				},
+				{
+					"name": "[Invalid Request] Invalid Sort Option (400)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/criminals/?sort=invalid_column",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"criminals",
+								""
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "invalid_column"
+								}
+							]
+						},
+						"description": "Demonstrates error handling for unsupported sort parameter (returns HTTP 400)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Bounty Hunting Journal (HuntLog CRUD)",
+			"item": [
+				{
+					"name": "List All Hunt Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								""
+							]
+						},
+						"description": "Lists all bounty hunting journal logs ordered by creation timestamp."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Hunt Logs by Criminal ID (e.g. criminal_id=1)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/?criminal_id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								""
+							],
+							"query": [
+								{
+									"key": "criminal_id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Filter journal logs for attempts made against criminal ID 1."
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Hunt Log by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/1/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								"1",
+								""
+							]
+						},
+						"description": "Retrieve details of hunt log entry 1."
+					},
+					"response": []
+				},
+				{
+					"name": "Record Capture Attempt (POST)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"criminal_id\": 3,\n  \"success\": false,\n  \"notes\": \"Target escaped through an asteroid field.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								""
+							]
+						},
+						"description": "Records a capture attempt. Creation timestamp is generated automatically by server. Returns HTTP 201 Created."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Hunt Log (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"success\": true,\n  \"notes\": \"Target was successfully captured in a follow-up strike!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/1/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								"1",
+								""
+							]
+						},
+						"description": "Partially updates an existing hunt log entry's notes and success status. Returns HTTP 200 OK."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Hunt Log (DELETE)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/14/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								"14",
+								""
+							]
+						},
+						"description": "Deletes a hunt log entry by ID. Returns HTTP 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "[Invalid Request] Record Hunt with Non-Existent Criminal (404)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"criminal_id\": 99999,\n  \"success\": false,\n  \"notes\": \"Attempted hunt against non-existent criminal ID.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								""
+							]
+						},
+						"description": "Demonstrates foreign key validation: attempt to record a journal entry for non-existent criminal ID 99999 returns HTTP 404."
+					},
+					"response": []
+				},
+				{
+					"name": "[Invalid Request] Get Non-Existent Hunt Log (404)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/hunts/99999/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"hunts",
+								"99999",
+								""
+							]
+						},
+						"description": "Demonstrates error handling when requesting non-existent hunt log (returns HTTP 404)."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
